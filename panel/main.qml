@@ -11,10 +11,10 @@ Window {
     id: window
 
     title: qsTr("Emoji Panel")
-    width: 200
-    height: 200
+    width: 240
+    height: 240
     visible: true
-    flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint
+    flags: Qt.Tool | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus
     color: "transparent"
     x: cursorPos.x
     y: cursorPos.y
@@ -64,156 +64,204 @@ Window {
 
     Component.onCompleted: searchEmojis("");
 
-    Keys.forwardTo: [searchField, emojiGrid]
-
-    Rectangle {
-        color: "#bbbbbbbb"
+    Item {
+        id: windowBkgd
         anchors.fill: parent
-        radius: 5
 
-        ColumnLayout {
+        Canvas {
+          id: triangle
+          antialiasing: true
+
+          anchors.top: parent.top
+          anchors.left: parent.left
+          anchors.leftMargin: 25
+          anchors.topMargin: 10
+          width: 15
+          height: 10
+
+          onPaint: {
+              var ctx = getContext("2d");
+              ctx.save();
+              ctx.clearRect(0,0,triangle.width, triangle.height);
+              ctx.lineWidth = 0;
+              ctx.fillStyle = "#cccccc";
+              ctx.beginPath();
+
+              // draw the rectangle
+              ctx.moveTo(triangle.width/2,0);
+              ctx.lineTo(0,triangle.height);
+              ctx.lineTo(triangle.width,triangle.height);
+
+              ctx.closePath();
+              ctx.fill();
+              ctx.restore();
+          }
+        }
+
+        Rectangle {
+            color: "#cccccc"
             anchors.fill: parent
-            anchors.margins: 5
+            anchors.margins: 20
+            radius: 5
+        }
+    }
+
+    DropShadow {
+        anchors.fill: windowBkgd
+        radius: 24
+        samples: 32
+        horizontalOffset: 0
+        verticalOffset: 5
+        color: "#cc000000"
+        source: windowBkgd
+    }
+
+    ColumnLayout {
+        anchors.fill: parent
+        anchors.margins: 25
+
+        spacing: 5
+
+        RowLayout {
+            anchors.left: parent.left
+            anchors.right: parent.right
 
             spacing: 5
 
-            RowLayout {
-                anchors.left: parent.left
-                anchors.right: parent.right
+            height: 20
 
-                spacing: 5
+            TextField {
+                id: searchField
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
 
-                height: 20
+                Layout.fillWidth: true
 
-                TextField {
-                    id: searchField
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                clip: true
+                focus: true
 
-                    Layout.fillWidth: true
+                style: TextFieldStyle {
+                    background: Item {
+                        Rectangle {
+                            id: textfieldBkgd
+                            radius: 5
+                            border.width: 1
+                            border.color: "#55000000"
+                            color: "#99ffffff"
+                            visible: false
 
-                    clip: true
+                            anchors.fill: parent
+                        }
 
-                    style: TextFieldStyle {
-                        background: Item {
-                            Rectangle {
-                                id: textfieldBkgd
-                                radius: 5
-                                border.width: 1
-                                border.color: "#55000000"
-                                color: "#99ffffff"
-                                visible: false
+                        InnerShadow {
+                            anchors.fill: textfieldBkgd
+                            radius: 16
+                            samples: 24
+                            horizontalOffset: 0
+                            verticalOffset: 1
+                            color: "#ff000000"
+                            source: textfieldBkgd
+                        }
 
-                                anchors.fill: parent
-                            }
+                        Image {
+                            id: magglass
+                            anchors.top: parent.top
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            anchors.margins: 5
+                            source: "emojis/1f50e.png"
 
-                            InnerShadow {
-                                anchors.fill: textfieldBkgd
-                                radius: 16
-                                samples: 24
-                                horizontalOffset: 0
-                                verticalOffset: 1
-                                color: "#ff000000"
-                                source: textfieldBkgd
-                            }
-
-                            Image {
-                                anchors.top: parent.top
-                                anchors.bottom: parent.bottom
-                                anchors.right: parent.right
-                                anchors.margins: 5
-                                source: "emojis/1f50e.png"
-
-                                fillMode: Image.PreserveAspectFit
-                            }
+                            fillMode: Image.PreserveAspectFit
                         }
                     }
-
-                    onTextChanged: searchEmojis(text);
                 }
 
-                Button {
-                    id: button
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
-
-                    style: ButtonStyle {
-                        background: Item {
-                            implicitWidth: 20
-                            implicitHeight: 20
-
-                            Rectangle {
-                                anchors.fill: parent
-                                color: "#99ffffff"
-                                radius: 5
-                                opacity: control.hovered
-
-                                Behavior on opacity { PropertyAnimation { duration: 100 } }
-                            }
-
-                            Image {
-                                anchors.fill: parent
-                                anchors.margins: 2
-                                source: "emojis/2716.png"
-                                fillMode: Image.PreserveAspectFit
-                            }
-                        }
-                    }
-
-                    onClicked: Qt.quit();
-                }
+                onTextChanged: searchEmojis(text);
             }
 
-            Item {
-                anchors.left: parent.left
-                anchors.right: parent.right
+            Button {
+                id: button
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
 
-                Layout.fillHeight: true
+                style: ButtonStyle {
+                    background: Item {
+                        implicitWidth: 20
+                        implicitHeight: 20
 
-                Rectangle {
-                    id: emojiGridBkgd
-                    radius: 5
-                    border.width: 1
-                    border.color: "#55000000"
-                    color: "#99ffffff"
-                    visible: false
+                        Rectangle {
+                            anchors.fill: parent
+                            color: "#99ffffff"
+                            radius: 5
+                            opacity: control.hovered
 
-                    anchors.fill: parent
-                }
-
-                InnerShadow {
-                    anchors.fill: emojiGridBkgd
-                    radius: 16
-                    samples: 24
-                    horizontalOffset: 0
-                    verticalOffset: 1
-                    color: "#ff000000"
-                    source: emojiGridBkgd
-                }
-
-                ScrollView {
-                    anchors.fill: parent
-
-                    style: EmojiGridScrollViewStyle {}
-
-                    GridView {
-                        id: emojiGrid
-                        anchors.fill: parent
-                        anchors.margins: 2
-                        clip:true
-
-                        cellWidth: 30
-                        cellHeight: 30
-
-                        delegate: EmojiGridDelegate {
-                            width: emojiGrid.cellWidth
-                            height: emojiGrid.cellHeight
+                            Behavior on opacity { PropertyAnimation { duration: 100 } }
                         }
 
-                        model: emojilist
+                        Image {
+                            anchors.fill: parent
+                            anchors.margins: 2
+                            source: "emojis/2716.png"
+                            fillMode: Image.PreserveAspectFit
+                        }
 
-                        focus: true
+
                     }
+                }
+
+                onClicked: emojiPanel.hide()
+            }
+        }
+
+        Item {
+            anchors.left: parent.left
+            anchors.right: parent.right
+
+            Layout.fillHeight: true
+
+            Rectangle {
+                id: emojiGridBkgd
+                radius: 5
+                border.width: 1
+                border.color: "#55000000"
+                color: "#99ffffff"
+                visible: false
+
+                anchors.fill: parent
+            }
+
+            InnerShadow {
+                anchors.fill: emojiGridBkgd
+                radius: 16
+                samples: 24
+                horizontalOffset: 0
+                verticalOffset: 1
+                color: "#ff000000"
+                source: emojiGridBkgd
+            }
+
+            ScrollView {
+                anchors.fill: parent
+
+                style: EmojiGridScrollViewStyle {}
+
+                GridView {
+                    id: emojiGrid
+                    anchors.fill: parent
+                    anchors.margins: 2
+                    clip:true
+
+                    cellWidth: 30
+                    cellHeight: 30
+
+                    delegate: EmojiGridDelegate {
+                        width: emojiGrid.cellWidth
+                        height: emojiGrid.cellHeight
+                    }
+
+                    model: emojilist
+
+                    focus: true
                 }
             }
         }

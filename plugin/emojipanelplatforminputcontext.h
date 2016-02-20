@@ -1,7 +1,7 @@
 #ifndef QEMOJIPANELPLATFORMINPUTCONTEXT_H
 #define QEMOJIPANELPLATFORMINPUTCONTEXT_H
 
-#include "qpa/qplatforminputcontext.h"
+#include <qpa/qplatforminputcontext.h>
 
 QT_BEGIN_NAMESPACE
 

@@ -10,7 +10,7 @@
 EmojiPanelPlatformInputContext::EmojiPanelPlatformInputContext()
     : m_focusObject(0)
 {
-    m_panelInterface = new QDBusInterface("com.murazaki.emojipanel", "/EmojiPanel", "local.server.Keyboard", QDBusConnection::sessionBus(), this);
+    m_panelInterface = new QDBusInterface("com.murazaki.emojipanel", "/EmojiPanel", "local.emojipanel.EmojiPanel", QDBusConnection::sessionBus(), this);
 
     connect(m_panelInterface, SIGNAL(emojiPressed(QString)), SLOT(emojiPressed(QString)));
 }

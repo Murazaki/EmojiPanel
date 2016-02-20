@@ -12,6 +12,8 @@ EmojiPanel::EmojiPanel(QApplication *app) : QObject(app)
 
     QObject *topLevel = m_engine.rootObjects().value(0);
     m_window = qobject_cast<QQuickWindow *>(topLevel);
+
+    hide();
 }
 
 EmojiPanel::~EmojiPanel() {
